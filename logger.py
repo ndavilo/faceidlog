@@ -2,7 +2,11 @@ import os
 import pandas as pd
 from datetime import datetime
 import pyautogui
+from tkinter import simpledialog
 from capture import capture_frames
+from recognize import recognize_face
+import threading
+from alert import alert_user
 
 def register_user(save_dir):
     """
@@ -19,10 +23,12 @@ def register_user(save_dir):
         captures multiple frames of the user's face, saves them, and then 
         saves user details to a CSV file.
     """
-    user_name = input("Enter user name: ")
-    file_number = input("Enter file number: ")
-    capture_frames(user_name, file_number, save_dir)
-    save_user_details(user_name, file_number)
+    user_name = simpledialog.askstring("Input", "Enter user name:")
+    if user_name:
+        file_number = simpledialog.askstring("Input", "Enter file number:")
+        if file_number:
+            capture_frames(user_name, file_number, save_dir)
+            save_user_details(user_name, file_number)
 
 def save_user_details(user_name, file_number):
     """
@@ -62,6 +68,12 @@ def clock_in_out():
     """
     pyautogui.alert('Please click or move the mouse to initiate clocking.')
     user_name = recognize_face()
+
+    if user_name:
+        message = f"Welcome, {user_name}!"
+        log_time(user_name)
+        threading.Thread(target=alert_user, args=(message,)).start()
+        
     log_time(user_name)
 
 def log_time(user_name):

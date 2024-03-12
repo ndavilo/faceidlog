@@ -1,4 +1,5 @@
 import cv2
+from tkinter import messagebox
 import os
 
 def capture_frames(user_name, file_number, save_dir):
@@ -49,3 +50,37 @@ def capture_frames(user_name, file_number, save_dir):
         
     cap.release()
     cv2.destroyAllWindows()
+
+
+def capture_one_frame():
+    """
+    Capture a single frame from the webcam.
+
+    Returns:
+        frame: The captured frame.
+    """
+    cap = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = cap.read()
+
+        if ret:
+            # Convert frame to grayscale for face detection
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            # Load face cascade classifier
+            face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+            # Detect faces in the frame
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+            if len(faces) > 0:
+                cap.release()
+                return frame
+
+        # Prompt user to try again or exit
+        response = messagebox.askyesno("Face not detected", "No face detected. Do you want to try again?")
+
+        if not response:
+            cap.release()
+            return None
