@@ -1,0 +1,10 @@
+# Ignore virtual environment directories
+env/
+
+# Ignore captured_images directory
+captured_images/
+
+# Ignore user_details.csv file
+user_details.csv
+__pycache__/
+.DS_Store
